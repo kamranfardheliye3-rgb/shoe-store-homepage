@@ -1,0 +1,254 @@
+
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>صفحه محصول</title>
+  <style>
+  
+    
+    /* Reset و پایه */
+    * { box-sizing: border-box; margin:0; padding:0; }
+    body, html { width:100%; height:100%; font-family:'Vazirmatn',sans-serif; background:#f6f7f8; color:#222; display:flex; justify-content:center; }
+    .wrap { width:100%; max-width:1100px; background:#f6f4f4; border-radius:14px; padding:18px; box-shadow:0 8px 26px rgba(0,0,0,0.08); }
+
+    /* هدر */
+    header { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+    .logo img{ height:60px; width:auto; display:block; object-fit:contain; }
+    .search input{ padding:8px 12px; border-radius:20px; border:1px solid #e6e6e6; width:280px; }
+    .main-nav{ display:flex; gap:12px; margin-right:6px; }
+    .main-nav a{ text-decoration:none; color:#000000; font-size:14px; padding:6px 8px; }
+    .main-nav a:hover {color: gray;} /* وقتی موس میره روش خاکستری میشه */
+
+  
+    .cart-btn{ background:#111; color:#fff; padding:8px 10px; border-radius:10px; border:1px solid rgba(0,0,0,0.06); display:flex; gap:8px; align-items:center; cursor:pointer; }
+    .cart-btn span{ background:#000000; color:#fff; padding:6px 10px; border-radius:8px; font-weight:700; }
+
+    hr.sep{ border:none; border-top:1px solid #eee; margin:12px 0; }
+
+    /* بخش محصول */
+    .product-area{ display:grid; grid-template-columns:1fr 420px; gap:22px; align-items:start; padding:10px 0; }
+
+    /* گالری */
+    .gallery{ background:linear-gradient(180deg,#fafafa,#fff); padding:12px; border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,0.03); position:relative; }
+    .main-image{ width:100%; aspect-ratio:4/3; border-radius:10px; background:#efefef center/cover no-repeat; border:1px solid #e8e8e8; transition: transform .22s ease, box-shadow .22s ease; cursor:zoom-in; }
+    .main-image:hover{ transform: translateY(-6px) scale(1.02); box-shadow:0 16px 36px rgba(0,0,0,0.12); }
+    .arrow{ position:absolute; top:50%; transform:translateY(-50%); background:rgba(0,0,0,0.45); color:#fff; border:none; width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 8px 20px rgba(0,0,0,0.12); z-index:2; }
+    .arrow.left{ left:-16px; } .arrow.right{ right:-16px; }
+
+    .thumbs{ display:flex; gap:10px; margin-top:12px; justify-content:flex-end; }
+    .thumb{ width:72px; height:54px; border-radius:8px; background:#f0f0f0 center/cover no-repeat; border:1px solid #e6e6e6; cursor:pointer; transition: transform .22s ease, box-shadow .22s ease, border-color .18s ease; }
+    .thumb:hover{ transform: translateY(-6px) scale(1.06); box-shadow: 0 10px 22px rgba(0,0,0,0.15); }
+    .thumb.active{ border:3px solid rgba(22,119,255,0.18); box-shadow:0 8px 18px rgba(22,119,255,0.06); }
+
+    /* جزئیات محصول */
+    .details{ padding:6px 2px; text-align:right; }
+    .title{ font-size:22px; font-weight:700; color:#111; margin-bottom:6px; }
+    .rating{ display:flex; gap:8px; align-items:center; color:#9aa0a6; margin-bottom:8px; }
+    .price{ font-size:20px; font-weight:800; color:#111; margin:8px 0; }
+    .select-row{ display:flex; gap:12px; align-items:center; margin-bottom:12px; justify-content:flex-start; }
+    .select-row label{ min-width:72px; color:#9aa0a6; }
+    select{ padding:10px 12px; border-radius:10px; border:1px solid #e6e6e6; background:#fff; font-size:14px; }
+    .desc{ color:#9aa0a6; margin:12px 0 18px; white-space:pre-line; line-height:1.8; }
+
+    .actions{ display:flex; gap:12px; align-items:center; }
+    .add{ background:#111; color:#fff; padding:12px 18px; border-radius:10px; border:none; font-weight:700; cursor:pointer; box-shadow:0 8px 20px rgba(0,0,0,0.06); }
+    .add:hover{ background:#000; }
+    .like{ width:44px; height:44px; border-radius:10px; border:1px solid #eee; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; background:#fff; }
+
+    /* محصولات مشابه */
+    .similar{ margin-top:26px; }
+    .sim-grid{ display:grid; grid-template-columns: repeat(5,1fr); gap:12px; }
+    .sim-card{ background:#fff; border-radius:10px; padding:10px; border:1px solid #f0f0f0; text-align:center; box-shadow:0 6px 14px rgba(0,0,0,0.02); }
+    .sim-card .img{ width:100%; aspect-ratio:4/3; border-radius:8px; background:#f3f3f3 center/cover no-repeat; margin-bottom:8px; border:1px solid #eee; transition: transform .22s ease, box-shadow .22s ease; }
+    .sim-card .img:hover{ transform: translateY(-6px) scale(1.03); box-shadow:0 12px 28px rgba(0,0,0,0.12); }
+    .sim-card .name{ font-size:13px; color:#9aa0a6; margin-bottom:6px; }
+    .sim-card .sim-price{ font-weight:700; }
+
+    /* لایت‌باکس */
+    .lightbox{ display:none; position:fixed; inset:0; z-index:1500; background:rgba(0,0,0,0.6); align-items:center; justify-content:center; padding:20px; }
+    .lb-image{ width:80%; max-width:900px; height:70vh; background-size:contain; background-repeat:no-repeat; background-position:center; border-radius:12px; box-shadow:0 14px 40px rgba(0,0,0,0.4); }
+    .lb-close{ position:absolute; top:18px; left:18px; background:rgba(255,255,255,0.95); border:none; font-size:26px; width:44px; height:44px; border-radius:8px; cursor:pointer; }
+    .lb-arrow{ position:absolute; top:50%; transform:translateY(-50%); background:rgba(255,255,255,0.95); border:none; font-size:28px; width:44px; height:44px; border-radius:50%; cursor:pointer; box-shadow:0 8px 20px rgba(0,0,0,0.12); }
+    .lb-arrow.left{ left:8%; } .lb-arrow.right{ right:8%; }
+
+    /* مودال سبد خرید */
+    .modal{ display:none; position:fixed; inset:0; z-index:1600; background:rgba(0,0,0,0.45); align-items:center; justify-content:center; padding:20px; }
+    .modal-content{ background:#fff; padding:26px; border-radius:12px; width:100%; max-width:420px; box-shadow:0 18px 40px rgba(0,0,0,0.18); text-align:right; position:relative; }
+    .modal-content h2{ text-align:center; color:#111; margin-bottom:14px; }
+    .modal-content label{ display:block; margin-top:10px; color:#9aa0a6; font-size:14px; }
+    .modal-content input{ width:100%; padding:10px; margin-top:6px; border-radius:8px; border:1px solid #e6e6e6; }
+    .submit-btn{ margin-top:16px; background:#060606; color:#fff; padding:12px 16px; border-radius:10px; border:none; width:100%; cursor:pointer; font-weight:700; }
+    .close-btn{ position:absolute; left:18px; top:18px; background:transparent; border:none; font-size:24px; cursor:pointer; }
+
+    /* Responsive */
+    @media (max-width:1000px){ .product-area{ grid-template-columns:1fr 360px; } .sim-grid{ grid-template-columns: repeat(3,1fr); } }
+    @media (max-width:820px){
+      .product-area{ grid-template-columns:1fr; padding:12px 0; gap:14px; }
+      .gallery{ order:1; width:100%; }
+      .details{ order:2; width:100%; padding:0; }
+      .thumbs{ justify-content:flex-start; overflow:auto; padding-bottom:6px; }
+      .main-nav{ display:none; }
+      .search input{ width:100%; max-width:420px; }
+      .wrap{ padding:12px; }
+      .lb-image{ width:95%; height:60vh; }
+      .arrow.left{ left:8px; }
+      .arrow.right{ right:8px; }
+      .sim-grid{ grid-template-columns: repeat(2,1fr); }
+    }
+    @media (max-width:420px){
+      header{ gap:8px; }
+      .logo img{ height:48px; }
+      .price{ font-size:18px; }
+      .thumb{ width:60px; height:46px; }
+      .sim-grid{ grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap" role="main">
+    <header>
+      <div class="logo"><img src="https://4photoshop.ir/wp-content/uploads/4photoshop-icon-shoe-%D8%A2%DB%8C%DA%A9%D9%88%D9%86-%DA%A9%D9%81%D8%B4.jpg" alt="لوگوی فروشگاه"></div>
+      <div class="search" role="search"><input type="search" placeholder="جستجو..." aria-label="جستجو"></div>
+      <nav aria-label="Main navigation" class="main-nav" >
+        <a href="#">خانه</a>
+        <a href="#">درباره ما</a>
+        <a href="#">راهنما</a>
+        <a href="#">فروشگاه</a>
+      </nav>
+      <button class="cart-btn" id="cartBtn" aria-label="سبد خرید">🛒 <span>سبد خرید</span></button>
+    </header>
+
+    <hr class="sep">
+
+    <section class="product-area">
+      <aside class="gallery">
+        <button class="arrow left" id="prevImg" aria-label="عکس قبلی">‹</button>
+        <div id="mainImage" class="main-image" style="background-image: url('https://dkstatics-public.digikala.com/digikala-products/b91f6a7d3604963780b576f57059af19e3f8b26e_1699895704.jpg?x-oss-process=image/resize,m_lfit,h_300,w_300/format,webp/quality,q_80')"></div>
+        <button class="arrow right" id="nextImg" aria-label="عکس بعدی">›</button>
+        <div class="thumbs" role="list">
+          <div class="thumb active" data-src="https://dkstatics-public.digikala.com/digikala-products/b91f6a7d3604963780b576f57059af19e3f8b26e_1699895704.jpg?x-oss-process=image/resize,m_lfit,h_300,w_300/format,webp/quality,q_80" style="background-image:url('https://dkstatics-public.digikala.com/digikala-products/b91f6a7d3604963780b576f57059af19e3f8b26e_1699895704.jpg?x-oss-process=image/resize,m_lfit,h_300,w_300/format,webp/quality,q_80')" aria-label="تصویر ۱"></div>
+          <div class="thumb" data-src="https://dkstatics-public.digikala.com/digikala-products/9c1b0d76aa04a5b3c5b8df4bb385738f256d001f_1699895715.jpg?x-oss-process=image/resize,m_lfit,h_800,w_800/format,webp/quality,q_90" style="background-image:url('https://dkstatics-public.digikala.com/digikala-products/9c1b0d76aa04a5b3c5b8df4bb385738f256d001f_1699895715.jpg?x-oss-process=image/resize,m_lfit,h_800,w_800/format,webp/quality,q_90')" aria-label="تصویر ۲"></div>
+          <div class="thumb" data-src="https://dkstatics-public.digikala.com/digikala-products/4c5bb8f8168c0b8e93320c10151f9fc1cb60d875_1699895707.jpg?x-oss-process=image/resize,m_lfit,h_800,w_800/format,webp/quality,q_90" style="background-image:url('https://dkstatics-public.digikala.com/digikala-products/4c5bb8f8168c0b8e93320c10151f9fc1cb60d875_1699895707.jpg?x-oss-process=image/resize,m_lfit,h_800,w_800/format,webp/quality,q_90')" aria-label="تصویر ۳"></div>
+          <div class="thumb" data-src="https://dkstatics-public.digikala.com/digikala-products/9c1b0d76aa04a5b3c5b8df4bb385738f256d001f_1699895715.jpg?x-oss-process=image/resize,m_lfit,h_800,w_800/format,webp/quality,q_90" style="background-image:url('https://dkstatics-public.digikala.com/digikala-products/9c1b0d76aa04a5b3c5b8df4bb385738f256d001f_1699895715.jpg?x-oss-process=image/resize,m_lfit,h_800,w_800/format,webp/quality,q_90')" aria-label="تصویر ۴"></div>
+          <div class="thumb" data-src="https://dkstatics-public.digikala.com/digikala-products/acf89a821b3a1286cea70d2b976ef2fa1974f436_1699895709.jpg?x-oss-process=image/resize,m_lfit,h_800,w_800/format,webp/quality,q_90" style="background-image:url('https://dkstatics-public.digikala.com/digikala-products/acf89a821b3a1286cea70d2b976ef2fa1974f436_1699895709.jpg?x-oss-process=image/resize,m_lfit,h_800,w_800/format,webp/quality,q_90')" aria-label="تصویر ۵"></div>
+        </div>
+      </aside>
+
+      <div class="details">
+        <div class="title">کفش ورزشی نایکی مدل Air Zoom(غیراصل)</div>
+        <div class="rating"><div class="stars">★ ★ ★ ★ ☆</div><div class="reviews">• ۲۴ نظر</div></div>
+        <div class="price">۲,۴۵۰,۰۰۰ تومان</div>
+        <div class="select-row">
+          <label for="option">انتخاب:</label>
+          <select id="option" aria-label="انتخاب سایز یا رنگ">
+            <option>انتخاب گزینه</option>
+            <option>سایز: ۴۰</option>
+            <option>سایز: ۴۲</option>
+            <option>سایز: ۴۴</option>
+            <option>رنگ: مشکی</option>
+            <option>رنگ: خاکستری</option>
+          </select>
+        </div>
+        <p class="desc" style="color: black;" >
+          کفش مخصوص دویدن با طراحی سبک و انعطاف‌پذیر است.
+          از پارچه تنفس‌پذیر و زیره ضد لغزش ساخته شده و
+          برای تمرینات روزانه، باشگاه و پیاده‌روی طولانی مناسب است.
+        </p>
+        <div class="actions">
+          <button class="add" id="addToCart">افزودن به سبد خرید</button>
+          <button class="like" id="addToWish">♡</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="similar">
+      <h3>محصولات مشابه</h3>
+      <div class="sim-grid">
+        <div class="sim-card"><div class="img" style="background-image:url('https://dkstatics-public.digikala.com/digikala-products/4a84ec868fb93bb07bd582856198e91f0db0bd46_1757957267.jpg?x-oss-process=image/resize,m_lfit,h_800,w_800/format,webp/quality,q_90')"></div><div class="name">کفش اسپرت زنانه</div><div class="sim-price">۱,۹۹۰,۰۰۰ تومان</div></div>
+        <div class="sim-card"><div class="img" style="background-image:url('https://dkstatics-public.digikala.com/digikala-products/aca092a02be47acdd17adf4f04d13d5c8ae907b4_1741889167.jpg?x-oss-process=image/resize,m_lfit,h_800,w_800/format,webp/quality,q_90')"></div><div class="name">کفش پیاده‌روی راحت</div><div class="sim-price">۲,۳۰۰,۰۰۰ تومان</div></div>
+        <div class="sim-card"><div class="img" style="background-image:url('https://dkstatics-public.digikala.com/digikala-products/0ad1681ce37535ad11831ab1699e00df5cddbf95_1759650730.jpg?x-oss-process=image/resize,m_lfit,h_800,w_800/format,webp/quality,q_90')"></div><div class="name">کفش رانینگ سبک</div><div class="sim-price">۱,۸۵۰,۰۰۰ تومان</div></div>
+        <div class="sim-card"><div class="img" style="background-image:url('https://dkstatics-public.digikala.com/digikala-products/be7aa2b316cfac607c77531fa44dbcdb1044fe98_1754903502.jpg?x-oss-process=image/resize,m_lfit,h_800,w_800/format,webp/quality,q_90')"></div><div class="name">کفش فوتبال پسرانه مدل Air Zoom.B1117u</div><div class="sim-price">۲,۰۵۰,۰۰۰ تومان</div></div>
+        <div class="sim-card"><div class="img" style="background-image:url('https://dkstatics-public.digikala.com/digikala-products/ebbe251ae93773321d9e4a4c09379a67b0bf9464_1759687678.jpg?x-oss-process=image/resize,m_lfit,h_800,w_800/format,webp/quality,q_90')"></div><div class="name">کفش ورزشی نایک مدل جدید</div><div class="sim-price">۲,۷۰۰,۰۰۰ تومان</div></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- لایت‌باکس -->
+  <div id="lightbox" class="lightbox" aria-hidden="true">
+    <button class="lb-close" id="lbClose" aria-label="بستن">×</button>
+    <button class="lb-arrow left" id="lbPrev" aria-label="قبلی">‹</button>
+    <div class="lb-image" id="lbImage" role="img" aria-label="تصویر بزرگ"></div>
+    <button class="lb-arrow right" id="lbNext" aria-label="بعدی">›</button>
+  </div>
+
+  <!-- مودال سبد خرید -->
+  <div id="signupModal" class="modal" aria-hidden="true">
+    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button class="close-btn" id="closeModal" aria-label="بستن">×</button>
+      <h2 id="modalTitle">سبد خرید</h2>
+      <form id="signupForm">
+        <label for="name">نام و نام خانوادگی:</label>
+        <input type="text" id="name" placeholder="مثلاً علی رضایی" required>
+        <label for="email">ایمیل:</label>
+        <input type="email" id="email" placeholder="example@email.com" required>
+        <label for="password">رمز عبور:</label>
+        <input type="password" id="password" placeholder="********" required>
+        <button type="submit" class="submit-btn">تایید</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // گالری
+    const thumbs = Array.from(document.querySelectorAll('.thumb'));
+    const main = document.getElementById('mainImage');
+    let currentIndex = 0;
+    function setActive(i){
+      thumbs.forEach(t=>t.classList.remove('active'));
+      const t = thumbs[i]; if(!t) return;
+      t.classList.add('active');
+      main.style.backgroundImage = `url('${t.dataset.src}')`;
+      currentIndex=i;
+    }
+    thumbs.forEach((thumb,i)=>{ thumb.addEventListener('click',()=>setActive(i)); thumb.addEventListener('dblclick',()=>openLightbox(i)); });
+    document.getElementById('nextImg').addEventListener('click',()=>setActive((currentIndex+1)%thumbs.length));
+    document.getElementById('prevImg').addEventListener('click',()=>setActive((currentIndex-1+thumbs.length)%thumbs.length));
+
+    // لایت‌باکس
+    const lightbox=document.getElementById('lightbox');
+    const lbImage=document.getElementById('lbImage');
+    const lbClose=document.getElementById('lbClose');
+    const lbNext=document.getElementById('lbNext');
+    const lbPrev=document.getElementById('lbPrev');
+    let lbIndex=0;
+    function openLightbox(i){ lbIndex=i; lbImage.style.backgroundImage=`url('${thumbs[i].dataset.src}')`; lightbox.style.display='flex'; lightbox.setAttribute('aria-hidden','false'); }
+    function closeLightbox(){ lightbox.style.display='none'; lightbox.setAttribute('aria-hidden','true'); }
+    lbClose.addEventListener('click',closeLightbox);
+    lbNext.addEventListener('click',()=>{ lbIndex=(lbIndex+1)%thumbs.length; lbImage.style.backgroundImage=`url('${thumbs[lbIndex].dataset.src}')`; setActive(lbIndex); });
+    lbPrev.addEventListener('click',()=>{ lbIndex=(lbIndex-1+thumbs.length)%thumbs.length; lbImage.style.backgroundImage=`url('${thumbs[lbIndex].dataset.src}')`; setActive(lbIndex); });
+    lightbox.addEventListener('click',(e)=>{ if(e.target===lightbox) closeLightbox(); });
+    setActive(0);
+
+    // مودال سبد خرید
+    const modal=document.getElementById("signupModal");
+    const cartBtn=document.getElementById("cartBtn");
+    const closeModal=document.getElementById("closeModal");
+    const signupForm=document.getElementById("signupForm");
+    cartBtn.addEventListener("click",()=>{ modal.style.display='flex'; modal.setAttribute('aria-hidden','false'); });
+    closeModal.addEventListener("click",()=>{ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); });
+    window.addEventListener("keydown",(e)=>{ if(e.key==='Escape'){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); closeLightbox(); }});
+    modal.addEventListener("click",(e)=>{ if(e.target===modal){ modal.style.display='none'; modal.setAttribute('aria-hidden','true'); }});
+    signupForm.addEventListener("submit",(e)=>{ e.preventDefault(); alert('سبد خرید تایید شد'); modal.style.display='none'; signupForm.reset(); });
+
+      </script>
+
+  
+
+
+
+  
+  
+</body>
+</html>
